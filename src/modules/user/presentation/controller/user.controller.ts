@@ -12,6 +12,8 @@ export const createUser = async (
 ): Promise<void> => {
   try {
     // Validate incoming request body using Zod DTO
+    console.log("Incoming request body:", req.body);
+
     const parsedData = CreateUserRequestDto.parse(req.body);
 
     // Resolve use case from dependency injection container
@@ -24,10 +26,9 @@ export const createUser = async (
     res.status(201).json(success(201, createdUser));
   } catch (err: any) {
     // Handle validation errors
-    if (err?.name === "ZodError") {
-      res
-        .status(400)
-        .json(error(400, err.errors.map((e: any) => e.message).join(", ")));
+    if (err?.name === "ZodError" && Array.isArray(err.errors)) {
+      const messages = err.errors.map((e: any) => e.message).join(", ");
+      res.status(400).json(error(400, messages));
       return;
     }
 

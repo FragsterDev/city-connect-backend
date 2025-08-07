@@ -8,13 +8,13 @@ export class CreateUserUsecase {
   async execute(
     input: Omit<User, "id" | "createdAt" | "updatedAt">
   ): Promise<User> {
-    const hashedPassword = hashPassword(input.password);
+    const hashedPassword = await hashPassword(input.password);
 
     const userToCreate = {
       ...input,
-      password: hashPassword,
+      password: hashedPassword,
     };
 
-    return this.userRepository.createUser(input);
+    return this.userRepository.createUser(userToCreate);
   }
 }
